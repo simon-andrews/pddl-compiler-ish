@@ -1,0 +1,20 @@
+{
+  "name": "pddl-compiler-ish",
+  "version": "0.1.0",
+  "main": "index.js",
+  "scripts": {
+    "start": "node index.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/simon-andrews/pddl-compiler-ish.git"
+  },
+  "author": "Simon Andrews",
+  "bugs": {
+    "url": "https://github.com/simon-andrews/pddl-compiler-ish/issues"
+  },
+  "homepage": "https://github.com/simon-andrews/pddl-compiler-ish#readme",
+  "dependencies": {
+    "parsimmon": "^1.12.0"
+  }
+}
