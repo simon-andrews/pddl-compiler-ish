@@ -3,15 +3,41 @@
 let P = require("parsimmon");
 let util = require("util");
 
+function token(parser) {
+  return parser.skip(P.optWhitespace);
+}
+
+function word(str) {
+  return P.string(str).thru(token);
+}
+
 let PDDL = P.createLanguage({
 
-  Expression: function(r) {
-    return P.alt(r.Symbol, r.Number, r.List);
+  lparen: () => word("("),
+  rparen: () => word(")"),
+
+  List: r => r.lparen.then(r.Atom.sepBy(P.optWhitespace)).skip(r.rparen),
+
+  Atom: function(r) {
+    return P.alt(
+      r.Name,
+      r.Number,
+      r.List,
+    );
   },
 
-  Symbol: function() {
-    return P.regexp(/[a-zA-Z:\?_-][a-zA-Z_-]*/)
-      .desc("symbol");
+  Expression: function(r) {
+    return P.alt(
+      r.Name,
+      r.Number,
+      r.List,
+    );
+  },
+
+  // Spec reference: McDermott 1998, page 7
+  Name: function() {
+    return P.regexp(/[a-zA-Z:\?][a-zA-Z0-9-_]*/)
+      .desc("name");
   },
 
   Number: function() {
@@ -20,18 +46,9 @@ let PDDL = P.createLanguage({
       .desc("number");
   },
 
-  List: function(r) {
-    return r.Expression
-      .trim(P.optWhitespace)
-      .many()
-      .wrap(P.string("("), P.string(")"));
-  },
-
   File: function(r) {
-    return r.Expression
-      .trim(P.optWhitespace)
-      .many();
-  }
+    return r.List.many();
+  },
 
 });
 
@@ -41,7 +58,7 @@ function prettyPrint(x) {
   console.log(s);
 }
 
-let text = `\
+let pddlText = `\
 (define (domain gripper)
   (:predicates (room ?r)
                (ball ?b)
@@ -59,5 +76,5 @@ let text = `\
                 (not (at-robby ?from)))))
 `;
 
-let ast = PDDL.File.tryParse(text);
+let ast = PDDL.File.tryParse(pddlText);
 prettyPrint(ast);
