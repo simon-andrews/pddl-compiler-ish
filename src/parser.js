@@ -33,12 +33,25 @@ let PDDL = P.createLanguage({
         word("domain"),
         r.Name.skip(r.rparen),
 
-        opt(r.ExtensionDef)
+        opt(r.ExtensionDef),
+        opt(r.PredicatesDef)
       )));
   },
 
   ExtensionDef: function(r) {
-    return withParens(P.seq(word(":extends"), r.Name));
+    return withParens(P.seq(word(":extends"), r.Name.sepBy(P.optWhitespace)));
+  },
+
+  PredicatesDef: function(r) {
+    return withParens(P.seq(word(":predicates"), r.AtomicFormulaSkeleton.sepBy(P.optWhitespace)));
+  },
+
+  AtomicFormulaSkeleton: function(r) {
+    return withParens(P.seq(r.Name.skip(P.optWhitespace), r.Variable.sepBy(P.optWhitespace)));
+  },
+
+  Variable: function(r) {
+    return P.string("?").then(r.Name);
   },
 
   // Spec reference: McDermott 1998, page 7

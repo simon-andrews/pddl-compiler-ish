@@ -1,4 +1,5 @@
 (define (domain gripper)
-  (:extends boop))
+  (:extends boop)
+  (:predicates (room ?b)))
 (define (domain arm)
   (:extends gripper))
