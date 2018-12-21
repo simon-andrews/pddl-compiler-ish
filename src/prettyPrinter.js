@@ -2,9 +2,9 @@
 
 var util = require("util");
 
-let opts = {
-  depth: null,
-  colors: "auto"
+const opts = {
+  depth: null, // disable recursion depth limit, recurse through the AST indefinitely
+  colors: true // style output with ANSI color codes
 };
 
 module.exports = {
