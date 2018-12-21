@@ -48,7 +48,7 @@ let PDDL = P.createLanguage({
   },
 
   File: function(r) {
-    return opt(P.optWhitespace).then(r.Domain.many());
+    return P.optWhitespace.then(r.Domain.many());
   },
 
 });
