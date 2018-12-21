@@ -21,15 +21,6 @@ let PDDL = P.createLanguage({
   Atom: function(r) {
     return P.alt(
       r.Name,
-      r.Number,
-      r.List,
-    );
-  },
-
-  Expression: function(r) {
-    return P.alt(
-      r.Name,
-      r.Number,
       r.List,
     );
   },
@@ -38,12 +29,6 @@ let PDDL = P.createLanguage({
   Name: function() {
     return P.regexp(/[a-zA-Z:\?][a-zA-Z0-9-_]*/)
       .desc("name");
-  },
-
-  Number: function() {
-    return P.regexp(/[0-9]+/)
-      .map(Number)
-      .desc("number");
   },
 
   File: function(r) {
