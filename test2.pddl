@@ -1,3 +1,3 @@
 (define (domain gripper)
-  :extends boop)
+  (:extends boop))
 

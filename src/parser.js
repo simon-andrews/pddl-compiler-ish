@@ -28,10 +28,10 @@ let PDDL = P.createLanguage({
   },
 
   ExtensionDef: function(r) {
-    return P.seq(
+    return r.lparen.then(P.seq(
         word(":extends"),
         r.Name
-    );
+    )).skip(r.rparen);
   },
 
   // Spec reference: McDermott 1998, page 7
