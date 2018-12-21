@@ -15,6 +15,11 @@ function withParens(parser) {
   return word("(").then(parser).skip(word(")"));
 }
 
+// An optional parser
+function opt(parser) {
+  return parser.atMost(1);
+}
+
 let PDDL = P.createLanguage({
 
   lparen: () => word("("),
@@ -27,17 +32,13 @@ let PDDL = P.createLanguage({
       .then(P.seq(
         word("domain"),
         r.Name.skip(r.rparen),
-        r.ExtensionDef.atMost(1)
+
+        opt(r.ExtensionDef)
       )));
   },
 
   ExtensionDef: function(r) {
-    return withParens(
-      P.seq(
-        word(":extends"),
-        r.Name
-      )
-    );
+    return withParens(P.seq(word(":extends"), r.Name));
   },
 
   // Spec reference: McDermott 1998, page 7
@@ -47,7 +48,7 @@ let PDDL = P.createLanguage({
   },
 
   File: function(r) {
-    return r.Domain.many();
+    return opt(P.optWhitespace).then(r.Domain.many());
   },
 
 });
