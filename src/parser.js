@@ -17,7 +17,11 @@ function withParens(parser) {
 
 // An optional parser
 function opt(parser) {
-  return parser.atMost(1);
+  return parser.or(P.of([]));
+}
+
+function typedListOf(parser) {
+  return parser.sepBy(P.optWhitespace);
 }
 
 let PDDL = P.createLanguage({
@@ -34,6 +38,7 @@ let PDDL = P.createLanguage({
         r.Name.skip(r.rparen),
 
         opt(r.ExtensionDef),
+        opt(r.ConstantsDef),
         opt(r.PredicatesDef)
       )));
   },
@@ -42,12 +47,20 @@ let PDDL = P.createLanguage({
     return withParens(P.seq(word(":extends"), r.Name.sepBy(P.optWhitespace)));
   },
 
+  // TODO: RequireDef
+  // TODO: RequireKey
+  // TODO: TypesDef
+  
+  ConstantsDef: function(r) {
+    return withParens(P.seq(word(":constants"), typedListOf(r.Name)));
+  },
+
   PredicatesDef: function(r) {
-    return withParens(P.seq(word(":predicates"), r.AtomicFormulaSkeleton.sepBy(P.optWhitespace)));
+    return withParens(P.seq(word(":predicates"), typedListOf(r.AtomicFormulaSkeleton)));
   },
 
   AtomicFormulaSkeleton: function(r) {
-    return withParens(P.seq(r.Name.skip(P.optWhitespace), r.Variable.sepBy(P.optWhitespace)));
+    return withParens(P.seq(r.Name.skip(P.optWhitespace), typedListOf(r.Variable)));
   },
 
   Variable: function(r) {
