@@ -56,7 +56,7 @@ let PDDL = P.createLanguage({
   // TODO: RequireDef
   // TODO: RequireKey
   // TODO: TypesDef
-  
+
   ConstantsDef: function(r) {
     return withParens(P.seq(word(":constants"), typedListOf(r.Name)));
   },
@@ -69,17 +69,17 @@ let PDDL = P.createLanguage({
 
   AtomicFormulaSkeleton: function(r) {
     return withParens(P.seq(r.Name.skip(P.optWhitespace), typedListOf(r.Variable)))
-      .map(pddl.makePredicate);
+      .map((x) => new pddl.Predicate(x));
   },
 
-  Variable: (r) => P.string("?").then(r.Name),
+  Variable: (r) => P.string("?").then(r.Name).map((x) => new pddl.Variable(x)),
 
   // TODO: TimelessDef
 
   // -------------------------------------------------------------------------
   // --- Action stuff --------------------------------------------------------
   // -------------------------------------------------------------------------
-  
+
   ActionDef: (r) => withParens(
     P.seq(
       word(":action"),

@@ -18,8 +18,14 @@ class Predicate {
   }
 }
 
+class Variable {
+  constructor(data) {
+    this.name = data;
+  }
+}
+
 module.exports = {
   Domain: Domain,
   Predicate: Predicate,
-  makePredicate: (data) => new Predicate(data),
+  Variable: Variable,
 }
