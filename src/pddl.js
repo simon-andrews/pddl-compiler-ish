@@ -3,7 +3,6 @@ var parser = require("./parser.js");
 
 class Action {
   constructor(data) {
-    console.log(data);
 
     // Action name and parameters are mandatory, and position is fixed
     assert.equal(data[0], ":action");
@@ -16,9 +15,9 @@ class Action {
     for (var i = 0; i < actionBody.length; i++) {
       switch (actionBody[i][0]) {
         case ":precondition":
-          this.precondition = actionBody[i][1]; i++; break;
+          this.precondition = actionBody[i][1]; break;
         case ":effect":
-          this.effect = actionBody[i][1]; i++; break;
+          this.effect = actionBody[i][1]; break;
       }
     }
   }
@@ -47,9 +46,34 @@ class Variable {
   }
 }
 
+class LogicOp {
+  constructor(predicates) {
+    if (this.constructor == LogicOp) {
+      throw new Error("LogicOp can't be instantiated directly");
+    }
+    this.predicates = predicates;
+  }
+}
+
+class And extends LogicOp {}
+class Not extends LogicOp {}
+class Or  extends LogicOp {}
+
 module.exports = {
   Action: Action,
+  And: And,
   Domain: Domain,
+  Not: Not,
+  Or: Or,
   Predicate: Predicate,
   Variable: Variable,
+  makeLogic: (data) => {
+    let r = data[0];
+    let p = data[1];
+    switch (r) {
+      case "and": return new And(p);
+      case "not": return new Not(p);
+      case "or":  return new Or(p);
+    }
+  }
 }

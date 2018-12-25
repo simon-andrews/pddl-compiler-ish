@@ -116,19 +116,16 @@ let PDDL = P.createLanguage({
     // TODO: :only-in-expansions
   ),
 
-  GoalDescription: (r) => P.alt(
-    withParens(
-      P.seq(
-        P.alt(
-          word("and"),
-          word("or"),
-          word("not")
-        ),
-        typedListOf(r.GoalDescription)
-      ),
-    ),
-    r.AtomicFormulaSkeleton,
-  ),
+  GoalDescription: (r) => P.alt(r.LogicOp, r.AtomicFormulaSkeleton),
+
+  LogicOp: (r) => withParens(
+    P.seq(
+      P.alt(
+        word("and"),
+        word("or"),
+        word("not")),
+      typedListOf(r.GoalDescription)))
+    .map(pddl.makeLogic),
 
   // Spec reference: McDermott 1998, page 7
   Name: () => P.regexp(/[a-zA-Z][a-zA-Z0-9-_]*/).desc("name"),
