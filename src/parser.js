@@ -1,6 +1,7 @@
 "use strict";
 
 let P = require("parsimmon");
+let pddl = require("./pddl.js");
 
 function token(parser) {
   return parser.skip(P.optWhitespace);
@@ -29,6 +30,10 @@ let PDDL = P.createLanguage({
   lparen: () => word("("),
   rparen: () => word(")"),
 
+  //--------------------------------------------------------------------------
+  //--- Domain stuff ---------------------------------------------------------
+  //--------------------------------------------------------------------------
+
   Domain: function(r) {
     return withParens(
       word("define")
@@ -39,12 +44,13 @@ let PDDL = P.createLanguage({
 
         opt(r.ExtensionDef),
         opt(r.ConstantsDef),
-        opt(r.PredicatesDef)
+        opt(r.PredicatesDef),
+        opt(r.ActionDef.many())
       )));
   },
 
   ExtensionDef: function(r) {
-    return withParens(P.seq(word(":extends"), r.Name.sepBy(P.optWhitespace)));
+    return withParens(P.seq(word(":extends"), typedListOf(r.Name)));
   },
 
   // TODO: RequireDef
@@ -55,27 +61,55 @@ let PDDL = P.createLanguage({
     return withParens(P.seq(word(":constants"), typedListOf(r.Name)));
   },
 
+  // TODO: DomainVarsDef
+
   PredicatesDef: function(r) {
     return withParens(P.seq(word(":predicates"), typedListOf(r.AtomicFormulaSkeleton)));
   },
 
   AtomicFormulaSkeleton: function(r) {
-    return withParens(P.seq(r.Name.skip(P.optWhitespace), typedListOf(r.Variable)));
+    return withParens(P.seq(r.Name.skip(P.optWhitespace), typedListOf(r.Variable)))
+      .map(pddl.makePredicate);
   },
 
-  Variable: function(r) {
-    return P.string("?").then(r.Name);
-  },
+  Variable: (r) => P.string("?").then(r.Name),
+
+  // TODO: TimelessDef
+
+  // -------------------------------------------------------------------------
+  // --- Action stuff --------------------------------------------------------
+  // -------------------------------------------------------------------------
+  
+  ActionDef: (r) => withParens(
+    P.seq(
+      word(":action"),
+      token(r.ActionFunctor),
+      word(":parameters"),
+      withParens(typedListOf(r.Variable)),
+      r.ActionDefBody
+    )),
+
+  ActionFunctor: (r) => r.Name,
+
+  ActionDefBody: (r) => P.seq(
+    opt(P.seq(
+      word(":vars"),
+      withParens(typedListOf(r.Variable))
+    )),
+    // TODO: :precondition
+    // TODO: :expansion
+    // TODO: :maintain
+    // TODO: :effect
+    // TODO: :only-in-expansions
+  ),
 
   // Spec reference: McDermott 1998, page 7
-  Name: function() {
-    return P.regexp(/[a-zA-Z][a-zA-Z0-9-_]*/)
-      .desc("name");
-  },
+  Name: () => P.regexp(/[a-zA-Z][a-zA-Z0-9-_]*/).desc("name"),
 
-  File: function(r) {
-    return P.optWhitespace.then(r.Domain.many());
-  },
+  // booleans are referenced in the spec but are not explained
+  Boolean: () => P.alt(P.string("true"), P.string("false")).map(Boolean),
+
+  File: (r) => P.optWhitespace.then(r.Domain.many()),
 
 });
 

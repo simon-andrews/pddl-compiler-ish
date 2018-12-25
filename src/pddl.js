@@ -8,19 +8,18 @@ class Domain {
   }
 }
 
-class PddlFile {
-  constructor(text) {
-    this.domains = [];
-    let ast = parser.parse(text);
-    for (var i = 0; i < ast.length; i++) {
-      if (ast[i][0] === "domain") {
-        this.domains.push(new Domain(ast[i]));
-      }
+class Predicate {
+  constructor(data) {
+    this.name = data[0];
+    this.variables = [];
+    for (var i = 0; i < data[1].length; i++) {
+      this.variables.push(data[1][i]);
     }
   }
 }
 
 module.exports = {
   Domain: Domain,
-  PddlFile: PddlFile,
+  Predicate: Predicate,
+  makePredicate: (data) => new Predicate(data),
 }

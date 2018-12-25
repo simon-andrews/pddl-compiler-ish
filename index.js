@@ -11,9 +11,4 @@ fs.readFile(process.argv[2], "utf8", function (err, text) {
   }
   let ast = parser.parse(text);
   pp.prettyPrint(ast);
-
-  let x = new pddl.PddlFile(text);
-  for (var i = 0; i < x.domains.length; i++) {
-    console.log(x.domains[i].name);
-  }
 });
