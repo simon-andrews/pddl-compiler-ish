@@ -94,20 +94,40 @@ let PDDL = P.createLanguage({
       word(":parameters"),
       withParens(typedListOf(r.Variable)),
       r.ActionDefBody
-    )),
+    )).map((x) => new pddl.Action(x)),
 
   ActionFunctor: (r) => r.Name,
 
   ActionDefBody: (r) => P.seq(
-    opt(P.seq(
+    /*opt(P.seq(
       word(":vars"),
       withParens(typedListOf(r.Variable))
+    ))*/
+    opt(P.seq(
+      word(":precondition"),
+      r.GoalDescription,
     )),
-    // TODO: :precondition
+    opt(P.seq(
+      word(":effect"),
+      r.GoalDescription,
+    )),
     // TODO: :expansion
     // TODO: :maintain
-    // TODO: :effect
     // TODO: :only-in-expansions
+  ),
+
+  GoalDescription: (r) => P.alt(
+    withParens(
+      P.seq(
+        P.alt(
+          word("and"),
+          word("or"),
+          word("not")
+        ),
+        typedListOf(r.GoalDescription)
+      ),
+    ),
+    r.AtomicFormulaSkeleton,
   ),
 
   // Spec reference: McDermott 1998, page 7
