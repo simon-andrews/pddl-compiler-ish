@@ -27,6 +27,8 @@ class Domain {
   constructor(data) {
     assert.equal(data[0], "domain");
     this.name = data[1];
+    this.predicates = data[2];
+    this.actions = data[3];
   }
 }
 

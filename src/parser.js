@@ -45,7 +45,8 @@ let PDDL = P.createLanguage({
         //opt(r.ConstantsDef),
         opt(r.PredicatesDef),
         opt(r.ActionDef.many())
-      ))),
+      )))
+      .map((x) => new pddl.Domain(x)),
 
   /*
   ExtensionDef: (r) => withParens(
@@ -67,11 +68,7 @@ let PDDL = P.createLanguage({
   // TODO: DomainVarsDef
   */
 
-  PredicatesDef: (r) => withParens(
-    P.seq(
-      word(":predicates"),
-      typedListOf(r.AtomicFormulaSkeleton)
-    )),
+  PredicatesDef: (r) => withParens(word(":predicates").then(typedListOf(r.AtomicFormulaSkeleton))),
 
   AtomicFormulaSkeleton: (r) => withParens(
     P.seq(
