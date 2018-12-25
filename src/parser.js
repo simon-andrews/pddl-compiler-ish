@@ -34,8 +34,7 @@ let PDDL = P.createLanguage({
   //--- Domain stuff ---------------------------------------------------------
   //--------------------------------------------------------------------------
 
-  Domain: function(r) {
-    return withParens(
+  Domain: (r) => withParens(
       word("define")
       .then(r.lparen)
       .then(P.seq(
@@ -46,31 +45,37 @@ let PDDL = P.createLanguage({
         opt(r.ConstantsDef),
         opt(r.PredicatesDef),
         opt(r.ActionDef.many())
-      )));
-  },
+      ))),
 
-  ExtensionDef: function(r) {
-    return withParens(P.seq(word(":extends"), typedListOf(r.Name)));
-  },
+  ExtensionDef: (r) => withParens(
+    P.seq(
+      word(":extends"),
+      typedListOf(r.Name)
+    )),
 
   // TODO: RequireDef
   // TODO: RequireKey
   // TODO: TypesDef
 
-  ConstantsDef: function(r) {
-    return withParens(P.seq(word(":constants"), typedListOf(r.Name)));
-  },
+  ConstantsDef: (r) => withParens(
+    P.seq(
+      word(":constants"),
+      typedListOf(r.Name)
+    )),
 
   // TODO: DomainVarsDef
 
-  PredicatesDef: function(r) {
-    return withParens(P.seq(word(":predicates"), typedListOf(r.AtomicFormulaSkeleton)));
-  },
+  PredicatesDef: (r) => withParens(
+    P.seq(
+      word(":predicates"),
+      typedListOf(r.AtomicFormulaSkeleton)
+    )),
 
-  AtomicFormulaSkeleton: function(r) {
-    return withParens(P.seq(r.Name.skip(P.optWhitespace), typedListOf(r.Variable)))
-      .map((x) => new pddl.Predicate(x));
-  },
+  AtomicFormulaSkeleton: (r) => withParens(
+    P.seq(
+      r.Name.skip(P.optWhitespace),
+      typedListOf(r.Variable)
+    )).map((x) => new pddl.Predicate(x)),
 
   Variable: (r) => P.string("?").then(r.Name).map((x) => new pddl.Variable(x)),
 
