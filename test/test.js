@@ -13,16 +13,6 @@ describe("Parser", function() {
       assert.equal(2, ast.length);
     });
 
-    it("should ignore whitespace in domain definitions", function() {
-      let text = `(    define   (
-        domain
-              wacky-whitespace)  )
-      `;
-      let ast = parser.parse(text);
-      assert.equal(1, ast.length);
-      assert.equal("wacky-whitespace", ast[0].name);
-    });
-
   });
 
   it("can handle files starting with whitespace", function() {
@@ -32,4 +22,13 @@ describe("Parser", function() {
     let ast = parser.parse(text);
   });
 
+  it("can handle wild whitespace use", function() {
+    let text = `(    define   (
+      domain
+            wacky-whitespace)  )
+    `;
+    let ast = parser.parse(text);
+    assert.equal(1, ast.length);
+    assert.equal("wacky-whitespace", ast[0].name);
+  });
 });
