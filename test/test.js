@@ -1,11 +1,22 @@
 var assert = require("assert");
+var fs = require("fs");
 var parser = require("../src/parser.js");
+
+let sampleAst = null;
+fs.readFile("./test.pddl", "utf8", (err, text) => {
+  if (err) { throw new Error("couldn't find test PDDL file"); }
+  sampleAst = parser.parse(text);
+})
 
 describe("Parser", function() {
 
   describe("Domain definitions", function() {
 
-    it("should be able to handle multiple domains in a single file", function() {
+    it("sets name correctly", function() {
+      assert.equal("gripper", sampleAst[0].name);
+    });
+
+    it("can handle multiple domains in a single file", function() {
       let text = `(define (domain gripper))
       (define (domain other-gripper))
       `;
