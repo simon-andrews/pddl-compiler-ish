@@ -41,12 +41,13 @@ let PDDL = P.createLanguage({
         word("domain"),
         r.Name.skip(r.rparen),
 
-        opt(r.ExtensionDef),
-        opt(r.ConstantsDef),
+        //opt(r.ExtensionDef),
+        //opt(r.ConstantsDef),
         opt(r.PredicatesDef),
         opt(r.ActionDef.many())
       ))),
 
+  /*
   ExtensionDef: (r) => withParens(
     P.seq(
       word(":extends"),
@@ -64,6 +65,7 @@ let PDDL = P.createLanguage({
     )),
 
   // TODO: DomainVarsDef
+  */
 
   PredicatesDef: (r) => withParens(
     P.seq(
