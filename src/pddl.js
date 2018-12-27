@@ -32,6 +32,13 @@ class Domain {
   }
 }
 
+// "Object" is already taken by JavaScript
+class Obj3ct {
+  constructor(data) {
+    this.name = data;
+  }
+}
+
 class Predicate {
   constructor(data) {
     this.name = data[0];
@@ -39,6 +46,18 @@ class Predicate {
     for (var i = 0; i < data[1].length; i++) {
       this.variables.push(data[1][i]);
     }
+  }
+}
+
+class Problem {
+  constructor(data) {
+    assert.equal(data[0], "problem");
+    this.name = data[1];
+    assert.equal(data[2], ":domain");
+    this.domainName = data[3];
+    this.objects = data[4];
+    this.init = data[5];
+    this.goal = data[6];
   }
 }
 
@@ -66,8 +85,10 @@ module.exports = {
   And: And,
   Domain: Domain,
   Not: Not,
+  Obj3ct: Obj3ct,
   Or: Or,
   Predicate: Predicate,
+  Problem: Problem,
   Variable: Variable,
   makeLogic: (data) => {
     let r = data[0];

@@ -73,7 +73,7 @@ let PDDL = P.createLanguage({
   AtomicFormulaSkeleton: (r) => withParens(
     P.seq(
       r.Name.skip(P.optWhitespace),
-      typedListOf(r.Variable)
+      typedListOf(P.alt(r.Variable, r.Name))
     )).map((x) => new pddl.Predicate(x)),
 
   Variable: (r) => P.string("?").then(r.Name).map((x) => new pddl.Variable(x)),
@@ -113,6 +113,30 @@ let PDDL = P.createLanguage({
     // TODO: :only-in-expansions
   ),
 
+  Problem: (r) => withParens(
+    word("define")
+    .then(r.lparen)
+    .then(P.seq(
+      word("problem"),
+      r.Name.skip(r.rparen).skip(r.lparen),
+      word(":domain"),
+      r.Name.skip(r.rparen),
+
+      opt(r.ObjectDef),
+      opt(r.InitDef),
+      opt(r.GoalDef),
+    ))).map((x) => new pddl.Problem(x)),
+
+  ObjectDef: (r) => withParens(
+    word(":objects")
+    .then(typedListOf(r.Object))),
+
+  Object: (r) => r.Name.map((x) => new pddl.Obj3ct(x)),
+
+  InitDef: (r) => withParens(word(":init").then(typedListOf(r.AtomicFormulaSkeleton))),
+
+  GoalDef: (r) => withParens(word(":goal").then(r.GoalDescription)),
+
   GoalDescription: (r) => P.alt(r.LogicOp, r.AtomicFormulaSkeleton),
 
   LogicOp: (r) => withParens(
@@ -130,7 +154,7 @@ let PDDL = P.createLanguage({
   // booleans are referenced in the spec but are not explained
   Boolean: () => P.alt(P.string("true"), P.string("false")).map(Boolean),
 
-  File: (r) => P.optWhitespace.then(r.Domain.many()),
+  File: (r) => P.optWhitespace.then(P.alt(r.Domain, r.Problem).many()),
 
 });
 
